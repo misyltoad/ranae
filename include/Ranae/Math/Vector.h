@@ -107,13 +107,12 @@ namespace ranae {
     }
 
 
-    static constexpr size_t alignment() {
-      // Align to 16 for anything greater than Vec2
-      // to take advantage of aligned load/store.
-      return Size > 2u ? std::max<size_t>(16u, alignof(T)) : alignof(T);
-    }
+    // Align to 16 for anything greater than Vec2
+    // to take advantage of aligned load/store.
+    static constexpr size_t Alignment = Size > 2u ? std::max<size_t>(16u, alignof(T)) : alignof(T);
 
-    alignas(alignment()) std::array<T, Size> data;
+
+    alignas(Alignment) std::array<T, Size> data;
 
   };
 
