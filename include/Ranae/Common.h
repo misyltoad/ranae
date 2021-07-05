@@ -52,6 +52,20 @@ namespace ranae {
     assert(expr);
   }
 
+
+  template<typename T>
+  constexpr T clamp(T n, T lo, T hi) {
+    if (n < lo) return lo;
+    if (n > hi) return hi;
+    return n;
+  }
+
+
+  template<typename T, typename U = T>
+  constexpr T align(T what, U to) {
+    return (what + to - 1) & ~(to - 1);
+  }
+
 }
 
 #define defer_1(x, y) x##y
