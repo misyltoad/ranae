@@ -8,16 +8,16 @@ namespace ranae {
   template <typename T>
   struct Quaternion : public Vector<T, 4> {
 
-    Quaternion()
+    constexpr Quaternion()
       : Vector<T, 4>{ } { }
 
-    Quaternion(T x, T y, T z, T w)
+    constexpr Quaternion(T x, T y, T z, T w)
       : Vector<T, 4>{ x, y, z, w } { }
 
-    Quaternion(const Vector<T, 3> v, T s)
+    constexpr Quaternion(const Vector<T, 3> v, T s)
       : Vector<T, 4>{ v[0], v[1], v[2], s } { }
 
-    Quaternion(const Quaternion& other) = default;
+    constexpr Quaternion(const Quaternion& other) = default;
 
 
     constexpr Quaternion<T> operator*(const Quaternion<T>& b) const {

@@ -6,24 +6,24 @@ namespace ranae {
 
   template <typename T, size_t Size>
   struct Vector {
-    Vector()
+    constexpr Vector()
       : data{ } { }
 
-    explicit Vector(T splat) {
+    constexpr explicit Vector(T splat) {
       std::fill(data.begin(), data.end(), splat);
     }
 
-    Vector(const T components[Size]) {
+    constexpr Vector(const T components[Size]) {
       std::copy(&components[0], &components[Size], data.begin());
     }
 
     template <typename... Args>
-    Vector(const Args&... args)
+    constexpr Vector(const Args&... args)
       : data {{ args... }} {
       static_assert(sizeof...(Args) == Size);
     }
 
-    Vector(const Vector<T, Size>& other) = default;
+    constexpr Vector(const Vector<T, Size>& other) = default;
 
 
     constexpr       T& operator[](size_t index)       { return data[index]; }
