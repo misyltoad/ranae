@@ -29,7 +29,6 @@ namespace Ranae {
       uint32_t dword = 0u;
       uint32_t bit   = idx;
 
-      // Compiler doesn't remove this otherwise.
       if constexpr (DwordCount > 1u) {
         dword = idx / 32u;
         bit   = idx % 32u;
