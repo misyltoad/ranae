@@ -20,5 +20,10 @@ int main() {
   std::cout << a << std::endl;
   std::cout << c << std::endl;
 
+  auto d = Vector<float, 2>{ 1.0f };
+
+  float scalar = { 2.0 };
+  std::cout << d * scalar << std::endl;
+
   return 0;
 }

@@ -9,7 +9,7 @@ namespace ranae {
     Vector()
       : data{ } { }
 
-    Vector(T splat) {
+    explicit Vector(T splat) {
       std::fill(data.begin(), data.end(), splat);
     }
 
@@ -88,6 +88,25 @@ namespace ranae {
     }
 
 
+    constexpr Vector<T, Size> operator*(const T& scalar) const {
+      return util::transform_result<Vector<T, Size>>(begin(), end(), [scalar](T value) { return value * scalar; });
+    }
+
+    constexpr Vector<T, Size> operator/(const T& scalar) const {
+      return util::transform_result<Vector<T, Size>>(begin(), end(), [scalar](T value) { return value / scalar; });
+    }
+
+    constexpr Vector<T, Size>& operator*=(const T& scalar) {
+      std::transform(begin(), end(), begin(), [scalar](T value) { return value * scalar; });
+      return *this;
+    }
+
+    constexpr Vector<T, Size>& operator/=(const T& scalar) {
+      std::transform(begin(), end(), begin(), [scalar](T value) { return value / scalar; });
+      return *this;
+    }
+
+
     static constexpr size_t alignment() {
       // Align to 16 for anything greater than Vec2
       // to take advantage of aligned load/store.
@@ -100,7 +119,7 @@ namespace ranae {
 
   template <typename T, size_t Size>
   constexpr Vector<T, Size> operator*(T scalar, const Vector<T, Size>& vector) {
-    return vector * scalar;
+    return util::transform_result<Vector<T, Size>>(vector.begin(), vector.end(), [scalar](T value) { return scalar * value; });
   }
 
   template <typename T, size_t Size>
