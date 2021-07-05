@@ -25,5 +25,10 @@ int main() {
   float scalar = { 2.0 };
   std::cout << d * scalar << std::endl;
 
+  d *= 3.0;
+  Assert(d == Vector<float, 2>(3.0f, 3.0f));
+  d /= 3.0;
+  Assert(d == Vector<float, 2>(1.0f, 1.0f));
+
   return 0;
 }
