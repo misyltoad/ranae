@@ -16,7 +16,7 @@ namespace ranae {
     return Transform {
       .position    = parent.position + parent.orientation * (parent.scale * local.position),
       .orientation = parent.orientation * local.orientation,
-      .scale       = parent.scale * (parent.orientation * local.scale,
+      .scale       = parent.scale * (parent.orientation * local.scale),
     };
   }
 
