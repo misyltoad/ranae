@@ -8,6 +8,7 @@
 #include <numeric>
 #include <ostream>
 #include <cassert>
+#include <memory>
 
 namespace ranae {
 
@@ -48,7 +49,7 @@ namespace ranae {
   }
 
   template <typename T>
-  void Assert(const T& expr) {
+  void rnAssert(const T& expr) {
     assert(expr);
   }
 
@@ -71,4 +72,4 @@ namespace ranae {
 #define defer_1(x, y) x##y
 #define defer_2(x, y) defer_1(x, y)
 #define defer_3(x)    defer_2(x, __COUNTER__)
-#define defer(code)   auto defer_3(_defer_) = ::ranae::impl::DeferFunction([&](){code;})
+#define defer(code)   auto defer_3(_defer_) = ::ranae::impl::DeferFunction([&](){code;});
