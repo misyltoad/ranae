@@ -67,6 +67,13 @@ namespace ranae {
     return (what + to - 1) & ~(to - 1);
   }
 
+  template <typename V, typename... T>
+  constexpr auto array_of(T&&... t)
+      -> std::array < V, sizeof...(T) >
+  {
+      return {{ std::forward<T>(t)... }};
+  }
+
 }
 
 #define defer_1(x, y) x##y
