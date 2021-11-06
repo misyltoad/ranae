@@ -25,10 +25,10 @@ namespace ranae {
                    ((rgba >>  0u) & 0xFFu) * PackScale } {}
 
     uint32_t pack() {
-      return uint32_t{ std::clamp(r / PackScale, 0u, 255u) } << 24u |
-             uint32_t{ std::clamp(g / PackScale, 0u, 255u) } << 16u |
-             uint32_t{ std::clamp(b / PackScale, 0u, 255u) } <<  8u |
-             uint32_t{ std::clamp(a / PackScale, 0u, 255u) } <<  0u;
+      return uint32_t{ std::clamp(r / PackScale, T{ 0 }, T { 255 }) } << 24u |
+             uint32_t{ std::clamp(g / PackScale, T{ 0 }, T { 255 }) } << 16u |
+             uint32_t{ std::clamp(b / PackScale, T{ 0 }, T { 255 }) } <<  8u |
+             uint32_t{ std::clamp(a / PackScale, T{ 0 }, T { 255 }) } <<  0u;
     }
 
     union {
