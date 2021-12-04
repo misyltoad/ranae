@@ -45,65 +45,91 @@ namespace ranae {
     }
   
 
+    template <typename UnaryOperation>
+    constexpr Vector<T, Size> transform_result(UnaryOperation op) const {
+      return util::transform_result<Vector<T, Size>>(begin(), end(), op);
+    }
+    
+    template <typename BinaryOperation>
+    constexpr Vector<T, Size> transform_result(const T *other, BinaryOperation op) const {
+      return util::transform_result<Vector<T, Size>>(begin(), end(), other, op);
+    }
+
+    template <typename BinaryOperation>
+    constexpr Vector<T, Size> transform_result(const Vector<T, Size>& other, BinaryOperation op) const {
+      return transform_result(other.begin(), op);
+    }
+
+    template <typename UnaryOperation>
+    constexpr Vector<T, Size>& transform_in_place(UnaryOperation op) {
+      std::transform(begin(), end(), begin(), op);
+      return *this;
+    }
+    
+    template <typename BinaryOperation>
+    constexpr Vector<T, Size>& transform_in_place(const T *other, BinaryOperation op) {
+      std::transform(begin(), end(), other, begin(), op);
+      return *this;
+    }
+
+    template <typename BinaryOperation>
+    constexpr Vector<T, Size>& transform_in_place(const Vector<T, Size>& other, BinaryOperation op) {
+      return transform_in_place(other.begin(), op);
+    }
+
+
     constexpr Vector<T, Size> operator-() const {
-      return util::transform_result<Vector<T, Size>>(begin(), end(), std::negate());
+      return transform_result(std::negate());
     }
   
 
     constexpr Vector<T, Size> operator+(const Vector<T, Size>& other) const {
-      return util::transform_result<Vector<T, Size>>(begin(), end(), other.begin(), std::plus());
+      return transform_result(other, std::plus());
     }
 
     constexpr Vector<T, Size> operator-(const Vector<T, Size>& other) const {
-      return util::transform_result<Vector<T, Size>>(begin(), end(), other.begin(), std::minus());
+      return transform_result(other, std::minus());
     }
 
     constexpr Vector<T, Size> operator*(const Vector<T, Size>& other) const {
-      return util::transform_result<Vector<T, Size>>(begin(), end(), other.begin(), std::multiplies());
+      return transform_result(other, std::multiplies());
+    }
+
+    constexpr Vector<T, Size> operator*(const T& scalar) const {
+      return transform_result([scalar](T value) { return value * scalar; });
     }
 
     constexpr Vector<T, Size> operator/(const Vector<T, Size>& other) const {
-      return util::transform_result<Vector<T, Size>>(begin(), end(), other.begin(), std::divides());
+      return transform_result(other, std::divides());
+    }
+
+    constexpr Vector<T, Size> operator/(const T& scalar) const {
+      return transform_result([scalar](T value) { return value / scalar; });
     }
 
 
     constexpr Vector<T, Size>& operator+=(const Vector<T, Size>& other) {
-      std::transform(begin(), end(), other.begin(), begin(), std::plus());
-      return *this;
+      return transform_in_place(std::plus());
     }
 
     constexpr Vector<T, Size>& operator-=(const Vector<T, Size>& other) {
-      std::transform(begin(), end(), other.begin(), begin(), std::minus());
-      return *this;
+      return transform_in_place(std::minus());
     }
 
     constexpr Vector<T, Size>& operator*=(const Vector<T, Size>& other) {
-      std::transform(begin(), end(), other.begin(), begin(), std::multiplies());
-      return *this;
-    }
-
-    constexpr Vector<T, Size>& operator/=(const Vector<T, Size>& other) {
-      std::transform(begin(), end(), other.begin(), begin(), std::divides());
-      return *this;
-    }
-
-
-    constexpr Vector<T, Size> operator*(const T& scalar) const {
-      return util::transform_result<Vector<T, Size>>(begin(), end(), [scalar](T value) { return value * scalar; });
-    }
-
-    constexpr Vector<T, Size> operator/(const T& scalar) const {
-      return util::transform_result<Vector<T, Size>>(begin(), end(), [scalar](T value) { return value / scalar; });
+      return transform_in_place(std::multiplies());
     }
 
     constexpr Vector<T, Size>& operator*=(const T& scalar) {
-      std::transform(begin(), end(), begin(), [scalar](T value) { return value * scalar; });
-      return *this;
+      return transform_in_place([scalar](T value) { return value * scalar; });
+    }
+
+    constexpr Vector<T, Size>& operator/=(const Vector<T, Size>& other) {
+      return transform_in_place(std::divides());
     }
 
     constexpr Vector<T, Size>& operator/=(const T& scalar) {
-      std::transform(begin(), end(), begin(), [scalar](T value) { return value / scalar; });
-      return *this;
+      return transform_in_place([scalar](T value) { return value / scalar; });
     }
 
 
@@ -118,18 +144,22 @@ namespace ranae {
 
   template <typename T, size_t Size>
   constexpr Vector<T, Size> operator*(T scalar, const Vector<T, Size>& vector) {
-    return util::transform_result<Vector<T, Size>>(vector.begin(), vector.end(), [scalar](T value) { return scalar * value; });
+    return vector.transform_result([scalar](T value) { return scalar * value; });
   }
 
   template <typename T, size_t Size>
   constexpr Vector<T, Size> operator/(T scalar, const Vector<T, Size>& vector) {
-    return util::transform_result<Vector<T, Size>>(vector.begin(), vector.end(), [scalar](T value) { return scalar / value; });
+    return vector.transform_result([scalar](T value) { return scalar / value; });
+  }
+
+  template <typename T, size_t Size>
+  constexpr T accumulate(const Vector<T, Size>& a, T init = T{}) {
+    return std::accumulate(a.begin(), a.end(), init);
   }
 
   template <typename T, size_t Size>
   constexpr T dot(const Vector<T, Size>& a, const Vector<T, Size>& b) {
-    auto multiplied = a * b;
-    return std::accumulate(multiplied.begin(), multiplied.end(), T{});
+    return accumulate(a * b);
   }
 
   template <typename T, size_t Size>
@@ -137,14 +167,19 @@ namespace ranae {
     return dot(a, a);
   }
 
-  template <typename T, size_t Size>
-  constexpr float length(const Vector<T, Size>& a) {
-    return std::sqrt(float{ lengthSqr(a) });
+  template <typename J, typename T, size_t Size>
+  constexpr J length(const Vector<T, Size>& a) {
+    return std::sqrt(J{ lengthSqr(a) });
   }
 
   template <typename T, size_t Size>
   constexpr Vector<T, Size> normalize(const Vector<T, Size>& a) {
-    return a * T{ 1.0f / length(a) };
+    return a * (T{ 1 } / T{ length<T>(a) });
+  }
+
+  template <typename T, size_t Size>
+  constexpr Vector<T, Size> rcp(const Vector<T, Size>& a) {
+    return a.transform_result([](T value) { return T{ 1 } / value; });
   }
 
   template <typename T, size_t Size>
