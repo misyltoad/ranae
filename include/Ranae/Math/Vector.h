@@ -133,10 +133,9 @@ namespace ranae {
     }
 
 
-    // Align to 16 for anything greater than Vec2
-    // to take advantage of aligned load/store.
-    static constexpr size_t Alignment = Size > 2u ? std::max<size_t>(16u, alignof(T)) : alignof(T);
-
+    // Align to 16 if the size is a multiple of 4 and T is 4 bytes in size.
+    // to take advantage of aligned load/stores.
+    static constexpr size_t Alignment = (Size % 4u == 0 && sizeof(T) == sizeof(int32_t)) ? std::max<size_t>(16u, alignof(T)) : alignof(T);
 
     alignas(Alignment) std::array<T, Size> data;
 
