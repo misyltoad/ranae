@@ -2,6 +2,7 @@
 
 #include <Ranae/Common.h>
 #include <Ranae/Math/Basic.h>
+#include <iostream>
 
 namespace ranae {
 
