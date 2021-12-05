@@ -56,7 +56,7 @@ namespace ranae {
   }
 
   // Returns true if a Transform does bugger all.
-  bool isIdentity(const Transform& t) {
+  bool identity(const Transform& t) {
     return t.position == Vector<float, 3>{0.0f} &&
            t.orientation == Quaternion{} &&
            t.scale == Vector<float, 3>{1.0f};
