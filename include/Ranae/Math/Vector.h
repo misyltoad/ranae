@@ -225,7 +225,8 @@ namespace ranae {
   std::ostream& operator<<(std::ostream& os, const Vector<T, Size>& v) {
     os << "Vector<" << typeid(T).name() << ", " << Size << ">(";
     for (size_t i = 0; i < Size; i++) {
-      os << v[i];
+      using PrintType = OstreamNumericTypeResolver<T>::NumericPrintType;
+      os << PrintType{ v[i] };
       if (i != Size - 1)
         os << ", ";
     }

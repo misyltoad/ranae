@@ -24,5 +24,22 @@ namespace ranae {
     return static_cast<J>(1) / static_cast<J>(a);
     //return J{ 1 } / J{ a };
   }
+
+  // Fucking ostream shit decides it wants to print as actual characters
+  // not numbers and there is no real workaround. What absolute fucking garbage.
+  template <typename T>
+  struct OstreamNumericTypeResolver {
+    using NumericPrintType = T;
+  };
+
+  template <>
+  struct OstreamNumericTypeResolver<uint8_t> {
+    using NumericPrintType = uint32_t;
+  };
+
+  template <>
+  struct OstreamNumericTypeResolver<int8_t> {
+    using NumericPrintType = int32_t;
+  };
     
 }
