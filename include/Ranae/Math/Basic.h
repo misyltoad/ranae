@@ -21,7 +21,7 @@ namespace ranae {
   constexpr J rcp(const T& a) {
     // GCC gets angy at me for narrowing otherwise which is stupid.
     // Need to find out why.
-    return static_cast<J>(1) / static_cast<J>(a);
+    return J(1) / J(a);
     //return J{ 1 } / J{ a };
   }
 
