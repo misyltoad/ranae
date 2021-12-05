@@ -1,11 +1,15 @@
 #pragma once
 
 #include <Ranae/Common.h>
+#include <Ranae/Math/Basic.h>
 
 namespace ranae {
 
   template <typename T, size_t Size>
   struct Vector {
+    using DefaultLengthType = DefaultLengthTypeResolver<T>::LengthType;
+    using DefaultLengthVector = Vector<DefaultLengthType, Size>;
+
     constexpr Vector()
       : data{ } { }
 
@@ -107,6 +111,14 @@ namespace ranae {
       return transform_result([scalar](T value) { return value / scalar; });
     }
 
+    constexpr Vector<T, Size> operator%(const Vector<T, Size>& other) const {
+      return transform_result(other, std::modulus());
+    }
+
+    constexpr Vector<T, Size> operator%(const T& scalar) const {
+      return transform_result([scalar](T value) { return value % scalar; });
+    }
+
 
     constexpr Vector<T, Size>& operator+=(const Vector<T, Size>& other) {
       return transform_in_place(std::plus());
@@ -132,6 +144,18 @@ namespace ranae {
       return transform_in_place([scalar](T value) { return value / scalar; });
     }
 
+    constexpr Vector<T, Size>& operator%=(const Vector<T, Size>& other) {
+      return transform_in_place(std::modulus());
+    }
+
+    constexpr Vector<T, Size>& operator%=(const T& scalar) {
+      return transform_in_place([scalar](T value) { return value % scalar; });
+    }
+
+  
+    static constexpr Vector<T, Size> Zero = Vector<T, Size>{ T{ 0 } };
+    static constexpr Vector<T, Size> Identity = Vector<T, Size>{ T{ 1 } };
+
 
     // Align to 16 if the size is a multiple of 4 and T is 4 bytes in size.
     // to take advantage of aligned load/stores.
@@ -152,6 +176,12 @@ namespace ranae {
   }
 
   template <typename T, size_t Size>
+  constexpr Vector<T, Size> operator%(T scalar, const Vector<T, Size>& vector) {
+    return vector.transform_result([scalar](T value) { return scalar % value; });
+  }
+
+
+  template <typename T, size_t Size>
   constexpr T accumulate(const Vector<T, Size>& a, T init = T{}) {
     return std::accumulate(a.begin(), a.end(), init);
   }
@@ -166,19 +196,29 @@ namespace ranae {
     return dot(a, a);
   }
 
-  template <typename J, typename T, size_t Size>
+  template <typename T, size_t Size, typename J = Vector<T, Size>::DefaultLengthType>
   constexpr J length(const Vector<T, Size>& a) {
     return std::sqrt(J{ lengthSqr(a) });
   }
 
-  template <typename T, size_t Size>
-  constexpr Vector<T, Size> normalize(const Vector<T, Size>& a) {
-    return a * (T{ 1 } / T{ length<T>(a) });
+  template <typename T, size_t Size, typename J = Vector<T, Size>::DefaultLengthType>
+  constexpr Vector<J, Size> normalize(const Vector<T, Size>& a) {
+    return a * J{ rcp( length<T, Size>(a) ) };
+  }
+
+  template <typename T, size_t Size, typename J = Vector<T, Size>::DefaultLengthType>
+  constexpr Vector<J, Size> rcp(const Vector<T, Size>& a) {
+    return util::transform_result<Vector<J, Size>>(a.begin(), a.end(), [](T value){ return rcp<T, J>(value); });
   }
 
   template <typename T, size_t Size>
-  constexpr Vector<T, Size> rcp(const Vector<T, Size>& a) {
-    return a.transform_result([](T value) { return T{ 1 } / value; });
+  constexpr bool empty(const Vector<T, Size>& a) {
+    return a == Vector<T, Size>::Zero;
+  }
+
+  template <typename T, size_t Size>
+  constexpr bool identity(const Vector<T, Size>& a) {
+    return a == Vector<T, Size>::Identity;
   }
 
   template <typename T, size_t Size>
